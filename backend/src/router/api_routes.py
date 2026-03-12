@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
 
 from src.db.mongo import MongoDBHandler
-from src.model.spider import get_movie_listings
+from backend.src.model.showing_spider import movies_showing
+from backend.src.model.avail_spider import avail_movies
 
 from bson.objectid import ObjectId
 from datetime import datetime
