@@ -41,7 +41,7 @@ def movies_showing(name: str, code: str, city: str, date: str) -> list:
 
 
 if __name__ == "__main__":
-    movies = movies_showing(name="inox-janak-place", code="SCJN", city="national-capital-region-ncr", date="20260312")
+    movies = movies_showing(name="inox-janak-place", code="SCJN", city="national-capital-region-ncr", date="20260313")
     # print(movies)
 
     # Save the showing movie titles to a txt file

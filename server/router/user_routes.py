@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+
 from .api_routes import router as survey_router
+
 from loguru import logger
 
 app = FastAPI()
