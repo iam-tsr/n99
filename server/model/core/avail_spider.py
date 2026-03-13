@@ -42,9 +42,9 @@ def avail_movies():
 
 if __name__ == "__main__":
     movies = avail_movies()
-    # print(movies)
+    print(movies)
 
     # Save the available movie titles to a txt file
-    with open("./output/available_movies.txt", "w") as f:
-        for title in movies:
-            f.write(title + "\n")
+    # with open("./output/available_movies.txt", "w") as f:
+    #     for title in movies:
+    #         f.write(title + "\n")
