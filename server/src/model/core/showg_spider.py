@@ -32,7 +32,9 @@ async def movies_showing(name: str, code: str, city: str, date: str) -> list:
 
             # Extract movie names from the cinema session listing
             movie_titles = soup.find_all("a", class_="sc-1412vr2-2 cPWByY")
-            print(clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()]))
+            cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
+            # print(cleaned)
+            return cleaned
             
         except Exception as e:
             print("Data not available yet.")

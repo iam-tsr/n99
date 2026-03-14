@@ -11,4 +11,6 @@ dependencies = [
     "pydantic",
     "uvicorn",
     "lxml",
+    "apscheduler",
+    "playwright",
 ]

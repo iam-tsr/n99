@@ -5,3 +5,5 @@ fastapi
 pydantic
 uvicorn
 lxml
+apscheduler
+playwright
