@@ -7,3 +7,5 @@ uvicorn
 lxml
 apscheduler
 playwright
+psycopg2
+dotenv
