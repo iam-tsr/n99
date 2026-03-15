@@ -1,0 +1,24 @@
+{
+    "cinema": [
+        {
+            "name": "inox-janak-place",
+            "code": "SCJN",
+            "city": "national-capital-region-ncr"
+        },
+        {
+            "name": "pvr-vegas-dwarka",
+            "code": "PVVW",
+            "city": "national-capital-region-ncr"
+        },
+        {
+            "name": "pvr-pacific-subhash-nagar-delhi",
+            "code": "PCSN",
+            "city": "national-capital-region-ncr"
+        },
+        {
+            "name": "pvr-vikaspuri-delhi",
+            "code": "PDIV",
+            "city": "national-capital-region-ncr"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+selenium
+beautifulsoup4
+loguru
+fastapi
+pydantic
+uvicorn
+lxml
+sqlalchemy
+psycopg2-binary
+python-dotenv
+passlib[bcrypt]
+PyJWT
+APScheduler
+python-multipart
+email-validator
