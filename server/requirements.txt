@@ -9,3 +9,5 @@ apscheduler
 playwright
 psycopg2
 dotenv
+starsessions
+redis

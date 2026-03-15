@@ -1,14 +1,9 @@
-from fastapi import FastAPI
-
-from .api_routes import router as survey_router
-
+from fastapi import APIRouter
 from loguru import logger
 
-app = FastAPI()
+router = APIRouter()
 
-app.include_router(survey_router)
-
-@app.get("/health")
+@router.get("/health")
 async def health_check():
     logger.info("Health check endpoint was called.")
     return {"status": "healthy"}
