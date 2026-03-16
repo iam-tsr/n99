@@ -1,0 +1,13 @@
+selenium
+beautifulsoup4
+loguru
+fastapi
+pydantic
+uvicorn
+lxml
+apscheduler
+playwright
+psycopg2
+dotenv
+starsessions
+redis
