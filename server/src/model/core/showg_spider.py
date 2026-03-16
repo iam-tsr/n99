@@ -37,6 +37,7 @@ async def movies_showing(name: str, code: str, city: str, date: str) -> list:
             return []
         
         finally:
+            await context.close()
             await browser.close()
 
 

@@ -35,6 +35,7 @@ def add_new_job(job_id, trigger_type, duration, start_date, **spider_kwargs):
             id=job_id,
             seconds=duration,
             start_date=start_date,
+            next_run_time=datetime.now(),
             kwargs=spider_kwargs
         )
         print(f"Successfully added Job: {job_id}")
@@ -62,7 +63,7 @@ if __name__ == "__main__":
         
         try:
             while True:
-                pass
+                await asyncio.sleep(1)
         except (KeyboardInterrupt, SystemExit):
             scheduler.shutdown()
             print("Scheduler stopped.")

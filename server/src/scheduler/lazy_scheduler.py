@@ -1,3 +1,5 @@
+import datetime
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from src.model.core.avail_spider import avail_movies
@@ -10,7 +12,7 @@ def avail_movies_task():
 
 def start_scheduler():
     """Starts the scheduler and adds the movie availability task."""
-    scheduler.add_job(avail_movies_task, 'interval', seconds=10)
+    scheduler.add_job(avail_movies_task, 'interval', seconds=10, next_run_time=datetime.now())
     scheduler.start()
     print("Scheduler started. Movie availability will be checked every hour.")
 
