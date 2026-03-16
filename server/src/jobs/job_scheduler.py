@@ -10,8 +10,9 @@ scheduler = AsyncIOScheduler()
 
 async def movies_showing_task(**spider_kwargs):
     """Task function to fetch and display currently showing movies."""
-    movies = await movies_showing(**spider_kwargs)
-    return movies
+    tasks = await movies_showing(**spider_kwargs)
+    print(f"Movies showing: {tasks}")
+    return tasks
 
 def add_new_job(job_id, trigger_type, duration, start_date, **spider_kwargs):
     """
@@ -35,7 +36,8 @@ def add_new_job(job_id, trigger_type, duration, start_date, **spider_kwargs):
             id=job_id,
             seconds=duration,
             start_date=start_date,
-            kwargs=spider_kwargs
+            next_run_time=datetime.now(),
+            kwargs=spider_kwargs,
         )
         print(f"Successfully added Job: {job_id}")
         return new_job
@@ -52,17 +54,17 @@ if __name__ == "__main__":
         job = add_new_job(
             job_id=str(uuid.uuid4()),
             trigger_type='interval',
-            duration=5,
+            duration=30,
             start_date=datetime.now(), # Temporarily set to now for testing
             name="inox-janak-place",
             code="SCJN",
             city="national-capital-region-ncr",
-            date="20260313"
+            date="20260317"
         )
         
         try:
             while True:
-                pass
+                await asyncio.sleep(1)
         except (KeyboardInterrupt, SystemExit):
             scheduler.shutdown()
             print("Scheduler stopped.")
