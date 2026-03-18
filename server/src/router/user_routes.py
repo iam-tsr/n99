@@ -58,6 +58,7 @@ async def complete_user_registration(data: UserProfileRequest, response: Respons
     user_id = None
     if session_token:
         user_id = await redis_client.get(f"session:{session_token}")
+        logger.info(f"Existing session found for user_id {user_id}. Using existing profile.")
     
     # Fetch movie data from Redis using the temporary key
     movie_info_str = await redis_client.get(data.temp_key)
@@ -73,13 +74,7 @@ async def complete_user_registration(data: UserProfileRequest, response: Respons
         session_token = str(uuid.uuid4())
         await redis_client.set(f"session:{session_token}", user_id)
         response.set_cookie(key="session_token", value=session_token, httponly=True)
-
-        # Store user_id in Redis mapped to a session token
-        session_token = str(uuid.uuid4())
-        # Store session forever
-        await redis_client.set(f"session:{session_token}", user_id)
-
-        response.set_cookie(key="session_token", value=session_token, httponly=True)
+        logger.info(f"Created new user profile with user_id {user_id} and set session cookie.")
 
     # Insert user data using the id from previous step and movie data retrieved from Redis
     data_pg.create_user_data(user_id, movie_info["movie"], movie_info["date"], movie_info["cinema"], movie_info["job_id"])

@@ -3,6 +3,7 @@
 import os
 import psycopg
 from dotenv import load_dotenv
+from loguru import logger
 
 load_dotenv()
 
@@ -13,11 +14,11 @@ def get_db_connection():
         try:
             # Establish a connection to the PostgreSQL database
             conn = psycopg.connect(conn_string)
-            print("Database connection established successfully.")
+            logger.info("Successfully connected to the database.")
             return conn
         except Exception as e:
-            print(f"Error connecting to the database: {e}")
+            logger.error(f"Error connecting to the database: {e}")
             return None
     else:
-        print("Warning: DATABASE_URL is not set in environment variables.")
+        logger.warning("Warning: DATABASE_URL is not set in environment variables.")
         return None
