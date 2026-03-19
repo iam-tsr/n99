@@ -1,9 +1,10 @@
 import re
 import asyncio
 from bs4 import BeautifulSoup
+from loguru import logger
 from playwright.async_api import async_playwright
 
-async def movies_showing(name: str, code: str, city: str, date: str) -> list:
+async def movies_showing(cinema: str, code: str, city: str, target_date: str, movie: str) -> list:
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
@@ -16,11 +17,12 @@ async def movies_showing(name: str, code: str, city: str, date: str) -> list:
         page = await context.new_page()
 
         try:
-            url = f"https://in.bookmyshow.com/cinemas/{city}/{name}/buytickets/{code}/{date}"
+            url = f"https://in.bookmyshow.com/cinemas/{city}/{cinema}/buytickets/{code}/{target_date}"
+            logger.info(f"Navigating to URL: {url}")
             await page.goto(url)
             
             await page.wait_for_url(url, timeout=5000)
-            print("Data is available now.\n\nExtracting movie titles...")
+            logger.info("Data is available now. Extracting movie titles...")
             
             await page.wait_for_selector("a.sc-1412vr2-2", timeout=15000)
 
@@ -29,11 +31,18 @@ async def movies_showing(name: str, code: str, city: str, date: str) -> list:
 
             movie_titles = soup.find_all("a", class_="sc-1412vr2-2 cPWByY")
             cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
-            # print(cleaned)
-            return cleaned
+            
+            logger.info(f"Extracted movie titles: {cleaned}")
+
+            if movie.upper() in cleaned:
+                logger.info(f"Movie '{movie}' is showing on {target_date} at {cinema}.")
+                return True
+            else:
+                logger.info(f"Movie '{movie}' is NOT showing on {target_date} at {cinema}.")
+                return False
             
         except Exception as e:
-            print("Data not available yet.")
+            logger.error("Data not available yet.")
             return []
         
         finally:
@@ -46,9 +55,10 @@ def clean_titles(titles):
     return cleaned_titles
 
 
+
 if __name__ == "__main__":
     async def main():
-        movies = await movies_showing(name="inox-janak-place", code="SCJN", city="national-capital-region-ncr", date="20260317")
+        movies = await movies_showing(cinema="inox-janak-place", code="SCJN", city="national-capital-region-ncr", target_date="20260317")
         print(movies)
 
     asyncio.run(main())

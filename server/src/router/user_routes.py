@@ -1,6 +1,5 @@
 import uuid
 import json
-import redis
 from fastapi import APIRouter, Response, HTTPException, Request
 from pydantic import BaseModel
 from loguru import logger

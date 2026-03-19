@@ -14,7 +14,7 @@ def get_db_connection():
         try:
             # Establish a connection to the PostgreSQL database
             conn = psycopg.connect(conn_string)
-            logger.info("Successfully connected to the database.")
+            # logger.info("Successfully connected to the database.")
             return conn
         except Exception as e:
             logger.error(f"Error connecting to the database: {e}")

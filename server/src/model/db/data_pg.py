@@ -42,10 +42,25 @@ class DataPG:
     def read_user_data(self, job_id: str):
         try:
             with self.conn.cursor() as cur:
-                cur.execute("SELECT * FROM user_data WHERE user_id = %s;", (job_id,))
+                cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,))
                 rows = cur.fetchall()
-                print(f"Fetched user data for user_id {job_id}")
+                print(f"Fetched user data for job_id {job_id}")
                 return rows
+
+        except Exception as e:
+            print("Connection failed.")
+            print(e)
+
+    def find_job(self):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT date, movie, cinema, job_id FROM user_data;")
+                rows = cur.fetchall()
+                print("Fetched all user data from user_data.")
+                records = [
+                    {"date": row[0].isoformat(), "movie": row[1], "cinema": row[2], "job_id": str(row[3])} for row in rows
+                ]
+                return records
 
         except Exception as e:
             print("Connection failed.")
@@ -54,17 +69,17 @@ class DataPG:
     def update_user_data(self, job_id, movie, date, cinema):
         try:
             with self.conn.cursor() as cur:
-                if cur.execute("SELECT * FROM user_data WHERE user_id = %s;", (job_id,)).fetchone():
+                if cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,)).fetchone():
                     cur.execute("""
                         UPDATE user_data
                         SET movie = %s, date = %s, cinema = %s
-                        WHERE user_id = %s;
+                        WHERE job_id = %s;
                     """, (movie, date, cinema, job_id))
 
                     self.conn.commit()
                     print("Updated user data in user_data.")
                 else:
-                    print(f"No user data found with user_id {job_id} in user_data.")
+                    print(f"No user data found with job_id {job_id} in user_data.")
 
         except Exception as e:
             print("Connection failed.")
@@ -73,12 +88,12 @@ class DataPG:
     def delete_user_data(self, job_id):
         try:
             with self.conn.cursor() as cur:
-                if cur.execute("SELECT * FROM user_data WHERE user_id = %s;", (job_id,)).fetchone():
-                    cur.execute("DELETE FROM user_data WHERE user_id = %s;", (job_id,))
+                if cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,)).fetchone():
+                    cur.execute("DELETE FROM user_data WHERE job_id = %s;", (job_id,))
                     self.conn.commit()
-                    print(f"Deleted user data for user_id {job_id} from user_data.")
+                    print(f"Deleted user data for job_id {job_id} from user_data.")
                 else:
-                    print(f"No user data found with user_id {job_id} in user_data.")
+                    print(f"No user data found with job_id {job_id} in user_data.")
 
         except Exception as e:
             print("Connection failed.")
@@ -93,8 +108,11 @@ class DataPG:
 
 if __name__ == "__main__":
     data_pg = DataPG()
-    data_pg.create_user_data("22", "Hoppers", "2026-03-23", "Vegas Mall", str(uuid.uuid4()))
+    # data_pg.create_user_data("22", "Hoppers", "2026-03-23", "Vegas Mall", str(uuid.uuid4()))
     # data = data_pg.read_user_data("17")
+    data = data_pg.find_job()
     # data_pg.update_user_data("17", "Updated Movie", "2026-03-23", "Updated Cinema")
     # data_pg.delete_user_data("17")
+
+    print(data)
     data_pg.connection_close()
