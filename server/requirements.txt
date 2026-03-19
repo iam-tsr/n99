@@ -7,3 +7,10 @@ uvicorn
 lxml
 psycopg2-binary
 python-dotenv
+apscheduler
+playwright
+psycopg
+dotenv
+starsessions
+redis
+
