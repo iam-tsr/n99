@@ -39,17 +39,25 @@ class DataPG:
             print("Connection failed.")
             print(e)
 
-    def read_user_data(self, job_id: str):
+    def get_user_id_by_job_id(self, job_id):
         try:
             with self.conn.cursor() as cur:
-                cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,))
-                rows = cur.fetchall()
-                print(f"Fetched user data for job_id {job_id}")
-                return rows
-
+                cur.execute("SELECT user_id FROM user_data WHERE job_id = %s;", (job_id,))
+                row = cur.fetchone()
+                if row:
+                    return row[0]
+                
+                # Check linked_data if not found in user_data
+                cur.execute("SELECT user_id FROM linked_data WHERE job_id = %s;", (job_id,))
+                row = cur.fetchone()
+                if row:
+                    return row[0]
+                
+                return None
         except Exception as e:
             print("Connection failed.")
             print(e)
+            return None
 
     def find_job(self):
         try:

@@ -30,16 +30,15 @@ class ProfilePG:
             print("Connection failed.")
             print(e)
 
-    def read_user_profiles(self, user_id: str):
+    def get_user_by_id(self, user_id):
         try:
             with self.conn.cursor() as cur:
-                cur.execute("SELECT COUNT(*) FROM user_profile WHERE user_id = %s;", (user_id,))
-                count = cur.fetchone()[0]
-                return count
-
+                cur.execute("SELECT username, email FROM user_profile WHERE user_id = %s;", (user_id,))
+                return cur.fetchone()
         except Exception as e:
             print("Connection failed.")
             print(e)
+            return None
 
     def update_user_profile(self, user_id, username, email):
         try:

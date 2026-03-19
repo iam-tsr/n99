@@ -2,14 +2,19 @@ import asyncio
 from datetime import datetime, timedelta
 import json
 import uuid
+import os
 from zoneinfo import ZoneInfo
 from loguru import logger
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from src.model.core.showg_spider import movies_showing
 from src.model.db.data_pg import DataPG
+from src.model.db.profile_pg import ProfilePG
+from src.services.mail.brevo_service import BrevoService
 
 pg = DataPG()
+profile_pg = ProfilePG()
+mail_service = BrevoService()
 
 scheduler = AsyncIOScheduler()
 sem = asyncio.Semaphore(3)
@@ -30,6 +35,22 @@ async def scheduling_task(**kwargs):
         job_id = kwargs.get('ref_job_id')
         if result is True and job_id:
             logger.info(f"Movie '{kwargs['movie']}' is currently showing. Updating database and removing job {job_id}.")
+            
+            # Fetch user details to send email
+            user_id = pg.get_user_id_by_job_id(job_id)
+            if user_id:
+                user = profile_pg.get_user_by_id(user_id)
+                if user:
+                    username, email = user
+                    logger.info(f"Sending email alert to {username} ({email})")
+                    await mail_service.send_movie_alert(
+                        to_email=email,
+                        to_name=username,
+                        movie_name=kwargs['movie'],
+                        cinema=kwargs['cinema'],
+                        date=kwargs['date']
+                    )
+            
             scheduler.remove_job(job_id)
             pg.delete_user_data(job_id)
             logger.info(f"Job {job_id} completed and removed from scheduler.")
@@ -63,8 +84,9 @@ def add_new_job(job_id, start_date, **kwargs):
 def data_mappg(data):
     try:
         # logger.info(f"Running data_mappg at {datetime.now()}")
-        # Read cinema-list.json and map the data to the required format
-        with open("src/scheduler/cinema-list.json", "r") as f:
+        # Read cinema-list.json from its new location
+        cinema_list_path = os.path.join(os.path.dirname(__file__), "cinema-list.json")
+        with open(cinema_list_path, "r") as f:
             cinema_list = json.load(f)
 
         movie_mapped_data = []
@@ -121,8 +143,14 @@ async def main():
                 city=movie_record['city'],
                 target_date=movie_record['date'].replace("-", ""),
                 movie=movie_record['movie'],
-                ref_job_id=job_record['job_id']
+                ref_job_id=job_record['job_id'],
+                date=movie_record['date']
             )
+            
+        # Keep alive for testing if run as script
+        if __name__ == "__main__":
+             while True:
+                await asyncio.sleep(1)
     
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
@@ -131,26 +159,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    # async def main():
-    #     scheduler.start()
-        
-    #     job = add_new_job(
-    #         job_id=str(uuid.uuid4()),
-    #         date=datetime.now(), # Temporarily set to now for testing
-    #         name="inox-janak-place",
-    #         code="SCJN",
-    #         city="national-capital-region-ncr",
-    #         date="20260313"
-    #     )
-        
-    #     try:
-    #         while True:
-    #             await asyncio.sleep(1)
-    #     except (KeyboardInterrupt, SystemExit):
-    #         scheduler.shutdown()
-    #         print("Scheduler stopped.")
-
-    # asyncio.run(main())
-    # t = task_args()
-    t = data_mappg([{'date': '2026-03-22', 'movie': 'Kerala Story 2', 'cinema': 'PVR: Vegas Dwarka', 'job_id': 'e54bf73f-8384-443e-b28c-21018574270a'}])
-    print(t[0])
