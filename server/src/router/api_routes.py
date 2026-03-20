@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from loguru import logger
 
-from src.scheduler.active_scheduler import main
-from src.scheduler.lazy_scheduler import start_scheduler
+from src.services.scheduler.active_scheduler import main
+from src.services.scheduler.lazy_scheduler import start_scheduler
 
 
 router = APIRouter()

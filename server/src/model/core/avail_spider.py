@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from loguru import logger
+
 # Configure headless Chrome
 options = webdriver.ChromeOptions()
 options.add_argument("--disk-cache-size=0")
@@ -31,11 +33,11 @@ def avail_movies():
 
         movie_titles = [el.get_attribute("alt").strip() for el in elements if el.get_attribute("alt")]
 
-        print("Available movies fetched successfully.")
+        logger.info("Available movies fetched successfully.")
         return movie_titles[:-9]  # Exclude the last 9 entries which are not movies
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
         return []
 
     finally:

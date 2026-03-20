@@ -1,4 +1,4 @@
-import os
+import asyncio
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from loguru import logger
@@ -9,17 +9,15 @@ from src.config.mail_config import brevo
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
-
-dotenv.load_dotenv()
 configuration = brevo()
 
 api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
 
-def send_email(to_email: str, subject: str, username, movie, cinema, date):
+async def send_email(to_email: str, username: str, movie: str, cinema: str, date: str):
     sender = {"name": "n99", "email": "info@nintynine.tech"}
     to = [{"email": to_email, "name": username}]
-    subject = subject
+    subject = f"🎬 Movie Alert: {movie} is now available!"
     html_content = generate_email_content(username, movie, cinema, date)
 
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
@@ -30,10 +28,10 @@ def send_email(to_email: str, subject: str, username, movie, cinema, date):
     )
 
     try:
-        api_response = api_instance.send_transac_email(send_smtp_email)
-        print(f"Email to {to_email} sent successfully! Message ID: {api_response.message_id}")
+        api_response = await asyncio.to_thread(api_instance.send_transac_email, send_smtp_email)
+        logger.info(f"Email to {to_email} sent successfully! Message ID: {api_response.message_id}")
     except ApiException as e:
-        print(f"Exception when calling TransactionalEmailsApi->send_transac_email: {e}")
+        logger.error(f"Exception when calling TransactionalEmailsApi->send_transac_email: {e}")
 
 
 def generate_email_content(username, movie, cinema, date):

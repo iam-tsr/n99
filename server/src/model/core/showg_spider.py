@@ -31,8 +31,9 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
 
             movie_titles = soup.find_all("a", class_="sc-1412vr2-2 cPWByY")
             cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
+            cleaned = list(set(cleaned))  # Remove duplicates
             
-            logger.info(f"Extracted movie titles: {cleaned}")
+            # logger.info(f"Extracted movie titles: {cleaned}")
 
             if movie.upper() in cleaned:
                 logger.info(f"Movie '{movie}' is showing on {target_date} at {cinema}.")
@@ -58,7 +59,7 @@ def clean_titles(titles):
 
 if __name__ == "__main__":
     async def main():
-        movies = await movies_showing(cinema="inox-janak-place", code="SCJN", city="national-capital-region-ncr", target_date="20260317")
+        movies = await movies_showing(cinema="pvr-vegas-dwarka", code="PVVW", city="national-capital-region-ncr", target_date="20260322")
         print(movies)
 
     asyncio.run(main())
