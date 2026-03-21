@@ -2,8 +2,7 @@ version: '1.0'
 
 services:
   server:
-    build: .
-    image: n99-server:latest
+    image: iamtsr9999/n99-server:latest
     ports:
       - "8000:8000"
     # env_file:
