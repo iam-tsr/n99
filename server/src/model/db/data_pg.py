@@ -65,6 +65,19 @@ class DataPG:
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
 
+    def read_listed_movies(self):
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute("SELECT movie_titles FROM movie_data;")
+                rows = cur.fetchall()
+                raw = rows[0][0] if rows else ""
+                movies = [m.strip().strip('"') for m in raw.strip('{}').split(',')]
+                logger.info("Fetched listed movies from movie_data.")
+                return movies
+
+        except Exception as e:
+            logger.error(f"Connection failed. Error: {e}")
+
     def find_job(self):
         try:
             with self.conn.cursor() as cur:
@@ -122,9 +135,11 @@ if __name__ == "__main__":
     # data_pg.create_user_data("22", "Hoppers", "2026-03-23", "Vegas Mall", str(uuid.uuid4()))
     # data = data_pg.read_user_data("17")
     # data = data_pg.find_job()
-    user_ids = data_pg.read_linked_data("418c5201-189f-481b-96a7-63be90504674")
+    # user_ids = data_pg.read_linked_data("418c5201-189f-481b-96a7-63be90504674")
     # data = [data_pg.read_linked_data_by_user_id(user_id) for user_id in user_ids]
     # data_pg.update_user_data("17", "Updated Movie", "2026-03-23", "Updated Cinema")
     # data_pg.delete_user_data("17")
-    print(user_ids)
+    data = data_pg.read_listed_movies()
+
+    print(data)
     data_pg.connection_close()
