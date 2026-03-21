@@ -59,7 +59,7 @@ body {
 }
 
 .folder-shoulder {
-  width: 160px; 
+  flex-grow: 1;
   height: 46px;
   background: #FFFFFF;
   border: 2px solid var(--btn-color);
@@ -72,13 +72,14 @@ body {
   display: flex;
   gap: 6px;
   align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .tab {
   background: #FFFFFF;
   border: 2px solid transparent;
   border-radius: 10px 10px 0 0;
-  padding: 8px 24px;
+  padding: 8px 22px;
   font-size: 14px;
   font-weight: 700;
   color: var(--text-dark);
@@ -88,6 +89,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .tab.active {
@@ -109,7 +111,7 @@ body {
 .folder-content {
   background: #FFFFFF;
   border: 2px solid var(--btn-color);
-  border-radius: 0 12px 12px 12px;
+  border-radius: 0 0 12px 12px;
   padding: 30px;
   position: relative;
   z-index: 1;
