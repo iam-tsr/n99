@@ -13,8 +13,8 @@ dotenv.load_dotenv()
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
 redis_client = redis.from_url(redis_url, decode_responses=True)
 
-def create_app() -> FastAPI:
-    app = FastAPI()
+def create_app(lifespan=None) -> FastAPI:
+    app = FastAPI(lifespan=lifespan)
 
     # Configure Redis for session management
     app.add_middleware(
