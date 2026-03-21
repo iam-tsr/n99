@@ -1,21 +1,39 @@
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 from loguru import logger
 
-# Configure headless Chrome
-options = webdriver.ChromeOptions()
-options.add_argument("--disk-cache-size=0")
-options.add_argument("--headless=new")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--window-size=1920,1080")
-options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+# Configure headless Chrome options
+def get_chrome_options():
+    options = Options()
+    options.add_argument("--disk-cache-size=0")
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+    return options
+
+def create_driver():
+    selenium_url = os.getenv("SELENIUM_URL")
+    options = get_chrome_options()
+
+    if selenium_url:
+        logger.info(f"Connecting to remote Selenium at {selenium_url}")
+        return webdriver.Remote(
+            command_executor=selenium_url,
+            options=options
+        )
+    else:
+        logger.info("Using local Chrome driver")
+        return webdriver.Chrome(options=options)
 
 def avail_movies():
-    driver = webdriver.Chrome(options=options)
+    driver = create_driver()
 
     try:
         url = "https://www.inoxmovies.com/"

@@ -16,7 +16,7 @@ async def get_active_scheduler():
     await start_active()
     return {"message": "Active scheduler triggered."}
 
-@router.post("/api/listed-movies")
+@router.get("/api/listed-movies")
 async def get_listed_movies():
     cache_key = "listed_movies"
     
@@ -34,7 +34,7 @@ async def get_listed_movies():
     
     return {"movies": data}
 
-@router.post("/api/listed-cinemas")
+@router.get("/api/listed-cinemas")
 async def get_listed_cinemas():
     cache_key = "listed_cinemas"
     
