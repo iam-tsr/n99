@@ -3,42 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>n99</title>
     <link rel="stylesheet" href="./src/style.css">
   </head>
   <body>
     <img src="./src/assets/n99_logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
 
     <div class="app-container">
-      <div class="folder-header">
-        <div class="folder-shoulder"></div>
-        <div class="folder-tabs">
-          <button class="tab active" data-target="home">Track</button>
-          <!-- <button class="tab" data-target="history">History</button> -->
-          <button class="tab" data-target="profile">Profile</button>
-        </div>
-      </div>
-
       <main class="folder-content">
         
-        <section id="home" class="tab-pane active">
+        <!-- Tracking Page -->
+        <section id="tracking" class="page-section active">
           <form id="tracking-form">
             <div class="input-group">
-              <label for="movie">Movie name</label>
-              <select id="movie" required>
-                <option value="" disabled selected>Select option</option>
-                <option value="dhurander">Dhurander</option>
-                <option value="movie2">Example Movie 2</option>
-              </select>
+              <label for="movie-search">Movie name</label>
+              <div class="custom-select" id="movie-dropdown">
+                <div class="select-trigger">
+                  <span class="select-value">Select option</span>
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
+                <div class="select-options">
+                  <input type="text" class="select-search" id="movie-search" placeholder="Search movies...">
+                  <div class="options-list"></div>
+                </div>
+              </div>
+              <input type="hidden" id="movie" required>
             </div>
             
             <div class="input-group">
-              <label for="cinema">Cinema</label>
-              <select id="cinema" required>
-                <option value="" disabled selected>Select option</option>
-                <option value="inox-janak">INOX: Janak Place</option>
-                <option value="cinema2">Example Cinema 2</option>
-              </select>
+              <label for="cinema-search">Cinema</label>
+              <div class="custom-select" id="cinema-dropdown">
+                <div class="select-trigger">
+                  <span class="select-value">Select option</span>
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </div>
+                <div class="select-options">
+                  <input type="text" class="select-search" id="cinema-search" placeholder="Search cinemas...">
+                  <div class="options-list"></div>
+                </div>
+              </div>
+              <input type="hidden" id="cinema" required>
             </div>
             
             <div class="input-group">
@@ -51,7 +59,8 @@
           <p id="movie-status" class="status-msg"></p>
         </section>
 
-        <section id="profile" class="tab-pane">
+        <!-- Profile Page -->
+        <section id="profile" class="page-section">
           <div class="profile-card">
             <form id="profile-form">
               <div class="input-group">
@@ -67,6 +76,20 @@
               <button type="submit" class="primary-btn">Save Profile</button>
             </form>
             <p id="profile-status" class="status-msg"></p>
+          </div>
+        </section>
+
+        <!-- Success Page -->
+        <section id="success" class="page-section">
+          <div class="success-container">
+            <div class="success-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#10B981" stroke-width="2" fill="none"/>
+                <path d="M8 12L11 15L16 9" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h2 class="success-title">Success!</h2>
+            <p class="success-message">We will notify you when the movie is available.</p>
           </div>
         </section>
 

@@ -1,9 +1,139 @@
-// ...existing code...
 let currentTempKey = null;
+const API_BASE_URL = 'http://localhost:8000';
 
-// --- Tab Navigation Logic ---
+// Page Navigation
+function showPage(pageId) {
+  const sections = document.querySelectorAll('.page-section');
+  sections.forEach(s => s.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+// Custom Select Dropdown Logic
+class CustomSelect {
+  constructor(containerId, hiddenInputId) {
+    this.container = document.getElementById(containerId);
+    this.hiddenInput = document.getElementById(hiddenInputId);
+    this.trigger = this.container.querySelector('.select-trigger');
+    this.valueSpan = this.container.querySelector('.select-value');
+    this.optionsContainer = this.container.querySelector('.select-options');
+    this.searchInput = this.container.querySelector('.select-search');
+    this.optionsList = this.container.querySelector('.options-list');
+    this.allOptions = [];
+    this.isOpen = false;
+
+    this.init();
+  }
+
+  init() {
+    // Toggle dropdown
+    this.trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggle();
+    });
+
+    // Search filtering
+    this.searchInput.addEventListener('input', (e) => {
+      this.filter(e.target.value);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!this.container.contains(e.target)) {
+        this.close();
+      }
+    });
+
+    // Prevent search input from closing dropdown
+    this.searchInput.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  setOptions(options) {
+    this.allOptions = options;
+    this.renderOptions(options);
+  }
+
+  renderOptions(options) {
+    this.optionsList.innerHTML = '';
+    if (options.length === 0) {
+      this.optionsList.innerHTML = '<div class="option-item no-results">No results found</div>';
+      return;
+    }
+    options.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'option-item';
+      div.textContent = opt;
+      div.addEventListener('click', () => this.select(opt));
+      this.optionsList.appendChild(div);
+    });
+  }
+
+  filter(query) {
+    const filtered = this.allOptions.filter(opt =>
+      opt.toLowerCase().includes(query.toLowerCase())
+    );
+    this.renderOptions(filtered);
+  }
+
+  select(value) {
+    this.hiddenInput.value = value;
+    this.valueSpan.textContent = value;
+    this.valueSpan.classList.remove('placeholder');
+    this.close();
+
+    // Update selected state
+    this.optionsList.querySelectorAll('.option-item').forEach(item => {
+      item.classList.toggle('selected', item.textContent === value);
+    });
+  }
+
+  toggle() {
+    this.isOpen ? this.close() : this.open();
+  }
+
+  open() {
+    this.isOpen = true;
+    this.trigger.classList.add('active');
+    this.optionsContainer.classList.add('open');
+    this.searchInput.value = '';
+    this.filter('');
+    this.searchInput.focus();
+  }
+
+  close() {
+    this.isOpen = false;
+    this.trigger.classList.remove('active');
+    this.optionsContainer.classList.remove('open');
+  }
+}
+
+let movieSelect, cinemaSelect;
+
+// Populate Dropdowns from API
+async function populateDropdowns() {
+  movieSelect = new CustomSelect('movie-dropdown', 'movie');
+  cinemaSelect = new CustomSelect('cinema-dropdown', 'cinema');
+
+  try {
+    const moviesRes = await fetch(`${API_BASE_URL}/api/listed-movies`, { method: 'POST' });
+    const moviesData = await moviesRes.json();
+    movieSelect.setOptions(moviesData.movies || []);
+  } catch (error) {
+    console.error('Error loading movies:', error);
+  }
+
+  try {
+    const cinemasRes = await fetch(`${API_BASE_URL}/api/listed-cinemas`, { method: 'POST' });
+    const cinemasData = await cinemasRes.json();
+    cinemaSelect.setOptions(cinemasData.cinemas || []);
+  } catch (error) {
+    console.error('Error loading cinemas:', error);
+  }
+}
+
 // Set min date for calendar input to tomorrow
 document.addEventListener('DOMContentLoaded', () => {
+  populateDropdowns();
+  
   const dateInput = document.getElementById('date');
   if (dateInput) {
     const today = new Date();
@@ -16,22 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
     dateInput.value = minDate;
   }
 });
-const tabs = document.querySelectorAll('.tab');
-const panes = document.querySelectorAll('.tab-pane');
 
-function switchTab(targetId) {
-  tabs.forEach(t => t.classList.remove('active'));
-  panes.forEach(p => p.classList.remove('active'));
-  
-  document.querySelector(`.tab[data-target="${targetId}"]`).classList.add('active');
-  document.getElementById(targetId).classList.add('active');
-}
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => switchTab(tab.dataset.target));
-});
-
-// --- API 1: Movie Selection (Home Tab) ---
+// Movie Selection
 document.getElementById('tracking-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('button');
@@ -47,24 +163,21 @@ document.getElementById('tracking-form').addEventListener('submit', async (e) =>
   statusEl.textContent = '';
 
   try {
-    // ⚠️ Uncomment when backend is ready
-    const res = await fetch(`/movie-selection`, {
+    const res = await fetch(`${API_BASE_URL}/movie-selection`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
+    const tempKey = data.temp_key;
     
-    // --- Mock Response ---
-    // const data = { temp_key: "key_" + Date.now() };
-
-    if (data.temp_key) {
-      currentTempKey = data.temp_key;
+    if (tempKey) {
+      currentTempKey = tempKey;
       statusEl.style.color = '#10B981';
       statusEl.textContent = 'Tracking initiated! Moving to profile...';
       
       setTimeout(() => {
-        switchTab('profile');
+        showPage('profile');
         btn.textContent = 'Start Tracking';
         statusEl.textContent = '';
       }, 1000);
@@ -76,7 +189,7 @@ document.getElementById('tracking-form').addEventListener('submit', async (e) =>
   }
 });
 
-// --- API 2: User Profile (Profile Tab) ---
+// User Profile
 document.getElementById('profile-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('button');
@@ -97,53 +210,49 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   btn.textContent = 'Confirming...';
 
   try {
-    // ⚠️ Uncomment when backend is ready
-    await fetch(`/user-profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
-    statusEl.style.color = '#10B981';
-    statusEl.textContent = 'Profile confirmed! Setup complete.';
-    
-    // Reset the key now that the flow is complete
-    currentTempKey = null; 
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.detail || 'Failed to save profile');
+    }
+
+    await res.json();
+
+    showPage('success');
     
     setTimeout(() => {
-      btn.textContent = 'Confirm Profile';
-      statusEl.textContent = '';
-      e.target.reset(); 
+      currentTempKey = null;
+      e.target.reset();
       document.getElementById('tracking-form').reset();
-      switchTab('home'); 
+      btn.textContent = 'Save Profile';
+      statusEl.textContent = '';
+      showPage('tracking');
     }, 2000);
 
   } catch (err) {
     statusEl.style.color = '#DA0B37';
-    statusEl.textContent = 'Failed to save profile.';
-    btn.textContent = 'Confirm Profile';
+    statusEl.textContent = err.message || 'Failed to save profile.';
+    btn.textContent = 'Save Profile';
   }
 });
 
-// --- API 3 & 4: Keep-Alive Schedulers (Using Web Worker) ---
+// Activate schedulers
+const SCHEDULER_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+// const SCHEDULER_INTERVAL = 1 * 60 * 1000; // 1 minute (for testing)
+ 
 async function startKeepAlive() {
   try {
-    fetch('/api/active-scheduler', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      keepalive: true
-    });
+    await fetch(`${API_BASE_URL}/api/active-scheduler`, { method: 'GET' });
+    console.log('Active scheduler triggered');
   } catch (error) {
     console.error('Error triggering active scheduler:', error);
   }
-
-  try {
-    fetch('/api/lazy-scheduler', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      keepalive: true
-    });
-  } catch (error) {
-    console.error('Error triggering lazy scheduler:', error);
-  }
 }
+
+startKeepAlive();
+setInterval(startKeepAlive, SCHEDULER_INTERVAL);
