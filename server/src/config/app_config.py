@@ -26,7 +26,7 @@ def create_app(lifespan=None) -> FastAPI:
     # CORS configuration
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["https://iam-tsr.github.io/n99"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
