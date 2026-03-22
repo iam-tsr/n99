@@ -10,8 +10,7 @@ import redis.asyncio as redis
 
 dotenv.load_dotenv()
 
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-redis_client = redis.from_url(redis_url, decode_responses=True)
+redis_client = redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
 
 def create_app(lifespan=None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
@@ -37,3 +36,16 @@ def create_app(lifespan=None) -> FastAPI:
     )
 
     return app
+
+
+
+if __name__ == "__main__":
+    async def main():
+        app = create_app()
+        print("App created successfully.")
+
+        # await redis_client.set("status", "running")
+        # print(await redis_client.get("status"))
+
+    import asyncio
+    asyncio.run(main())
