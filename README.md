@@ -25,22 +25,6 @@ n99 is an automated movie ticket tracking application that monitors cinema websi
 | **Job Scheduling** | APScheduler handles periodic checks efficiently |
 | **User Profiles** | Persistent user preferences and tracking history |
 
-## Tech Stack
-
-### Frontend
-- **Vue 3** - Progressive JavaScript framework
-- **Vite** - Next-generation frontend tooling
-- **Modern CSS** - Clean, responsive UI
-
-### Backend
-- **FastAPI** - High-performance Python web framework
-- **Uvicorn** - Lightning-fast ASGI server
-- **PostgreSQL** - Robust relational database (via psycopg)
-- **Redis** - In-memory data structure store for caching & sessions
-- **APScheduler** - Advanced Python Scheduler for background tasks
-- **Playwright & Selenium** - Browser automation for web scraping
-- **SendInBlue (Brevo)** - Email delivery service
-
 ## Issues
 
 If you encounter any bugs or have feature suggestions, please [open an issue](https://github.com/iam-tsr/n99/issues/new). Include:
