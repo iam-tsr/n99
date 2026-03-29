@@ -53,27 +53,27 @@ async def scheduling_task(**kwargs):
     except Exception as e:
         logger.error(f"Error in movies_showing_task: {e}")
 
-def add_new_job(job_id, start_date, **kwargs):
+def add_new_job(job_id, **kwargs):
     """
     Creates and adds a job to the running scheduler.
     """
     try:
         # Check if job ID already exists to avoid duplicates
-        if scheduler.get_job(job_id):
-            logger.info(f"Job {job_id} already exists. Skipping creation.")
-
+        if not scheduler.get_job(job_id):
             # Add the job to the scheduler
             new_job = scheduler.add_job(
                 scheduling_task,
                 'interval',
                 id=job_id,
                 hours=6,
-                start_date=start_date,
                 next_run_time=datetime.now(),
                 kwargs=kwargs
             )
             logger.info(f"Successfully added Job: {job_id}")
             return new_job
+        
+        logger.info(f"Job {job_id} already exists. Skipping creation.")
+        return None
             
     except Exception as e:
         logger.error(f"Error adding job {job_id}: {e}")
@@ -147,7 +147,7 @@ async def main():
         for movie_record, job_record in zip(movie_mapped_data, job_data):
             add_new_job(
                 job_id=job_record['job_id'],
-                start_date=datetime.strptime(job_record['date'], "%Y-%m-%d"),
+                # start_date=datetime.strptime(job_record['date'], "%Y-%m-%d"),
 
                 cinema=movie_record['cinema'],
                 code=movie_record['code'],
@@ -185,5 +185,5 @@ if __name__ == "__main__":
 
     # asyncio.run(main())
     # t = task_args()
-    t = data_mappg([{'date': '2026-03-22', 'movie': 'Kerala Story 2', 'cinema': 'PVR: Vegas Dwarka', 'job_id': 'e54bf73f-8384-443e-b28c-21018574270a'}])
-    print(t[0])
+    # t = data_mappg([{'date': '2026-03-22', 'movie': 'Kerala Story 2', 'cinema': 'PVR: Vegas Dwarka', 'job_id': 'e54bf73f-8384-443e-b28c-21018574270a'}])
+    # print(t[0])

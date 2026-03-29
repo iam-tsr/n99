@@ -14,7 +14,7 @@ def avail_movies_task():
     try:
         with conn.cursor() as cur:
             if cur.execute("SELECT id FROM movie_data WHERE id = 'AVAIL'"):
-                logger.info("Movie availability record already exists. Updating it.")
+                # logger.info("Movie availability record already exists. Updating it.")
                 movies = avail_movies()
 
                 cur.execute("""
