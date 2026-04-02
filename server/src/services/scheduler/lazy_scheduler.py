@@ -46,7 +46,7 @@ def start_scheduler():
         next_run_time=datetime.now()
     )
     scheduler.start()
-    logger.info("Scheduler started. Movie availability will be checked every 2 days.")
+    # logger.info("Scheduler started. Movie availability will be checked every 2 days.")
 
 if __name__ == "__main__":
     start_scheduler()
