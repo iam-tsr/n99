@@ -147,7 +147,6 @@ async def main():
         for movie_record, job_record in zip(movie_mapped_data, job_data):
             add_new_job(
                 job_id=job_record['job_id'],
-                # start_date=datetime.strptime(job_record['date'], "%Y-%m-%d"),
 
                 cinema=movie_record['cinema'],
                 code=movie_record['code'],

@@ -45,15 +45,25 @@ async def save_movie_selection(data: MovieSelection):
     # Return the temporary key so the frontend can send it on Page 2
     return {"temp_key": temp_key}
 
+@router.get("/check-session")
+async def check_session(request: Request):
+    """Check if user has an active session."""
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        user_id = await redis_client.get(f"session:{session_token}")
+        if user_id:
+            return {"has_session": True, "user_id": user_id}
+            
+    return {"has_session": False}
+
 @router.post("/user-profile")
 async def complete_user_registration(data: UserProfileRequest, response: Response, request: Request):
     logger.info(f"Received data: {data}")
 
-    # Check for session_token cookie
-    session_token = request.cookies.get("session_token")
     user_id = None
-    if session_token:
-        user_id = await redis_client.get(f"session:{session_token}")
+    check_session_result = await check_session(request)
+    if check_session_result["has_session"]:
+        user_id = check_session_result["user_id"]
         logger.info(f"Existing session found for user_id {user_id}. Using existing profile.")
     
     # Fetch movie data from Redis using the temporary key
@@ -69,7 +79,7 @@ async def complete_user_registration(data: UserProfileRequest, response: Respons
             raise HTTPException(status_code=400, detail="Username and email required for new user.")
         user_id = profile_pg.create_user_profile(data.username, data.email)
         session_token = str(uuid.uuid4())
-        await redis_client.set(f"session:{session_token}", user_id)
+        await redis_client.set(f"session:{session_token}", user_id, ex=1296000)
         response.set_cookie(key="session_token", value=session_token, httponly=True)
         logger.info(f"Created new user profile with user_id {user_id} and set session cookie.")
 

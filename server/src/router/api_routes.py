@@ -28,7 +28,7 @@ async def get_listed_movies():
     # Fetch from database
     data_pg = DataPG()
     data = data_pg.read_listed_movies()
-    
+
     # Store in Redis with 1 hour expiry (3600 seconds)
     await redis_client.setex(cache_key, 3600, json.dumps(data))
     
@@ -52,7 +52,7 @@ async def get_listed_cinemas():
         logger.error(f"Error fetching listed cinemas: {e}")
         cinema_names = []
     
-    # Store in Redis with 1 hour expiry (3600 seconds)
-    await redis_client.setex(cache_key, 3600, json.dumps(cinema_names))
+    # Store in Redis without expiry
+    await redis_client.set(cache_key, json.dumps(cinema_names))
     
     return {"cinemas": cinema_names}
