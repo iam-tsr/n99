@@ -7,10 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from starsessions import SessionMiddleware
 from starsessions.stores.redis import RedisStore
 import redis.asyncio as redis
+from upstash_redis.asyncio import Redis
 
 dotenv.load_dotenv()
 
-redis_client = redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
+redis_client = Redis(url=os.getenv("UPSTASH_REDIS_REST_URL"), token=os.getenv("UPSTASH_REDIS_REST_TOKEN"))
+# redis_client = redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
 
 def create_app(lifespan=None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
