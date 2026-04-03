@@ -5,12 +5,14 @@ from src.config.db_config import get_db_connection
 from loguru import logger
 
 class ProfilePG:
-    def __init__(self):
-        self.conn = get_db_connection()
+    def _get_conn(self):
+        return get_db_connection()
 
     def create_user_profile(self, username, email):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT user_id FROM user_profile WHERE email = %s;", (email,))
                 existing_user = cur.fetchone()
                 if existing_user:
@@ -24,26 +26,36 @@ class ProfilePG:
                 """, (username, email))
                 
                 returned_id = cur.fetchone()[0]
-                self.conn.commit()
+                conn.commit()
                 logger.info(f"Inserted user with user_id {returned_id} into user_profile.")
                 return returned_id
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def read_user_profiles(self, user_id: str):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM user_profile WHERE user_id = %s;", (user_id,))
                 count = cur.fetchone()[0]
                 return count
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def read_user_data(self, user_id: str):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT username, email FROM user_profile WHERE user_id = %s;", (user_id,))
                 rows = cur.fetchall()
                 logger.info(f"Fetched linked data for user_id {user_id}")
@@ -51,10 +63,15 @@ class ProfilePG:
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def update_user_profile(self, user_id, username, email):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 if cur.execute("SELECT * FROM user_profile WHERE user_id = %s;", (user_id,)).fetchone():
                     cur.execute("""
                         UPDATE user_profile
@@ -62,34 +79,38 @@ class ProfilePG:
                         WHERE user_id = %s;
                     """, (username, email, user_id))
 
-                    self.conn.commit()
+                    conn.commit()
                     logger.info(f"Updated user with user_id {user_id} in user_profile.")
                 else:
                     logger.info(f"No user found with user_id {user_id} in user_profile.")
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def delete_user_profile(self, user_id):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 if cur.execute("SELECT * FROM user_profile WHERE user_id = %s;", (user_id,)).fetchone():
                     cur.execute("""
                         DELETE FROM user_profile
                         WHERE user_id = %s;         
                     """, (user_id,))
-                    self.conn.commit()
+                    conn.commit()
                     logger.info(f"Deleted user with user_id {user_id} from user_profile.")
                 else:
                     logger.info(f"No user found with user_id {user_id} in user_profile.")
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
-    def close_connection(self):
-        if self.conn:
-            self.conn.close()
-            logger.info("Database connection closed.")
 
 
 if __name__ == "__main__":

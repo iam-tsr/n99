@@ -4,12 +4,14 @@ from src.config.db_config import get_db_connection
 from loguru import logger
 
 class DataPG:
-    def __init__(self):
-        self.conn = get_db_connection()
+    def _get_conn(self):
+        return get_db_connection()
 
     def create_user_data(self, user_id, movie, date, cinema, job_id):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT job_id FROM user_data WHERE movie = %s AND date = %s AND cinema = %s;", (movie, date, cinema))
                 existing_data = cur.fetchone()
                 
@@ -21,7 +23,7 @@ class DataPG:
                     VALUES (%s, %s);
                     """, (user_id, ref_job_id))
 
-                    self.conn.commit()
+                    conn.commit()
                     logger.info("Inserted user data into linked_data.")
                     return
                 
@@ -31,16 +33,21 @@ class DataPG:
                     VALUES (%s, %s, %s, %s, %s);
                     """, (user_id, movie, date, cinema, job_id))
 
-                    self.conn.commit()
+                    conn.commit()
                     logger.info("Inserted user data into user_data.")
                     return
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def read_user_data(self, job_id: str):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,))
                 rows = cur.fetchall()
                 logger.info(f"Fetched user data for job_id {job_id}")
@@ -48,10 +55,15 @@ class DataPG:
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def read_userID(self, job_id: str):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT user_id FROM linked_data WHERE job_id = %s;", (job_id,))
                 linked_rows = cur.fetchall()
 
@@ -64,10 +76,15 @@ class DataPG:
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def read_listed_movies(self):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT movie_titles FROM movie_data;")
                 rows = cur.fetchall()
                 raw = rows[0][0] if rows else ""
@@ -77,10 +94,15 @@ class DataPG:
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def find_job(self):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 cur.execute("SELECT date, movie, cinema, job_id FROM user_data;")
                 rows = cur.fetchall()
                 logger.info("Fetched all user data from user_data.")
@@ -91,10 +113,15 @@ class DataPG:
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def update_user_data(self, job_id, movie, date, cinema):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 if cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,)).fetchone():
                     cur.execute("""
                         UPDATE user_data
@@ -102,33 +129,34 @@ class DataPG:
                         WHERE job_id = %s;
                     """, (movie, date, cinema, job_id))
 
-                    self.conn.commit()
+                    conn.commit()
                     logger.info("Updated user data in user_data.")
                 else:
                     logger.info(f"No user data found with job_id {job_id} in user_data.")
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
+        finally:
+            if conn:
+                conn.close()
 
     def delete_user_data(self, job_id):
+        conn = None
         try:
-            with self.conn.cursor() as cur:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
                 if cur.execute("SELECT * FROM user_data WHERE job_id = %s;", (job_id,)).fetchone():
                     cur.execute("DELETE FROM user_data WHERE job_id = %s;", (job_id,))
-                    self.conn.commit()
+                    conn.commit()
                     logger.info(f"Deleted user data for job_id {job_id} from user_data.")
                 else:
                     logger.info(f"No user data found with job_id {job_id} in user_data.")
 
         except Exception as e:
             logger.error(f"Connection failed. Error: {e}")
-
-    def connection_close(self):
-        if self.conn:
-            self.conn.close()
-            logger.info("Database connection closed.")
-
-
+        finally:
+            if conn:
+                conn.close()
 
 if __name__ == "__main__":
     data_pg = DataPG()

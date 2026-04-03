@@ -12,9 +12,7 @@ conn_string = os.getenv("DATABASE_URL")
 def get_db_connection():
     if conn_string:
         try:
-            # Establish a connection to the PostgreSQL database
-            conn = psycopg.connect(conn_string)
-            # logger.info("Successfully connected to the database.")
+            conn = psycopg.connect(conn_string, sslmode="require")
             return conn
         except Exception as e:
             logger.error(f"Error connecting to the database: {e}")
