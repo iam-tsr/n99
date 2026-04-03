@@ -12,7 +12,6 @@ from upstash_redis.asyncio import Redis
 dotenv.load_dotenv()
 
 redis_client = Redis(url=os.getenv("UPSTASH_REDIS_REST_URL"), token=os.getenv("UPSTASH_REDIS_REST_TOKEN"))
-# redis_client = redis.from_url(os.getenv("REDIS_URL"), decode_responses=True)
 
 def create_app(lifespan=None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
@@ -28,9 +27,8 @@ def create_app(lifespan=None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            "https://iam-tsr.github.io",
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
+            "https://iam-tsr.github.io/n99/", # Production
+            "http://localhost:5173", # Local test
         ],
         allow_credentials=True,
         allow_methods=["*"],
