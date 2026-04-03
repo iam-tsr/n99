@@ -27,8 +27,9 @@ def create_app(lifespan=None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            "https://iam-tsr.github.io/n99/", # Production
-            "http://localhost:5173", # Local test
+            "https://iam-tsr.github.io", # Production
+            "http://localhost:5173", # Local test with Vite dev server
+            "http://localhost:4173", # Local test with Vite preview
         ],
         allow_credentials=True,
         allow_methods=["*"],

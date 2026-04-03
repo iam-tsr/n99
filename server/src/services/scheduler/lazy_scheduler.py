@@ -39,6 +39,7 @@ def start_scheduler():
     if scheduler.running:
         logger.info("Lazy scheduler is already running.")
         return
+    
     scheduler.add_job(
         avail_movies_task, 
         'interval', 

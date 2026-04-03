@@ -21,6 +21,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 3. Install Playwright browsers
+RUN playwright install chromium --with-deps
+
 COPY . .
 
 # 3. Environment variables

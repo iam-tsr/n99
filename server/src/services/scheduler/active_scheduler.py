@@ -1,7 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
 import json
-import uuid
 from zoneinfo import ZoneInfo
 from loguru import logger
 

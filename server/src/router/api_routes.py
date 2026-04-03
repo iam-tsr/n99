@@ -5,6 +5,7 @@ from loguru import logger
 
 from src.model.db.data_pg import DataPG
 from src.services.scheduler.active_scheduler import main as start_active
+from src.services.scheduler.lazy_scheduler import start_scheduler
 from src.config.app_config import redis_client
 
 router = APIRouter()
@@ -15,6 +16,11 @@ router = APIRouter()
 async def get_active_scheduler():
     await start_active()
     return {"message": "Active scheduler triggered."}
+
+@router.get("/api/avail-movies")
+async def get_avail_movies():
+    start_scheduler()
+    return {"message": "Lazy scheduler triggered to fetch available movies."}
 
 @router.get("/api/listed-movies")
 async def get_listed_movies():
