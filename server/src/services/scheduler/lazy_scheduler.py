@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 from apscheduler.schedulers.background import BackgroundScheduler
 from loguru import logger
 from src.config.db_config import get_db_connection
-from src.model.core.avail_spider import avail_movies
+from src.model.core.avail_spider_pw import avail_movies
 
 scheduler = BackgroundScheduler()
 
@@ -16,7 +16,6 @@ def avail_movies_task():
             if cur.execute("SELECT id FROM movie_data WHERE id = 'AVAIL'"):
                 # logger.info("Movie availability record already exists. Updating it.")
                 movies = avail_movies()
-
                 cur.execute("""
                 UPDATE movie_data
                 SET movie_titles = %s, updated_at = %s
