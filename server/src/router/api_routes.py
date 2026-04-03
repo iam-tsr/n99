@@ -5,7 +5,6 @@ from loguru import logger
 
 from src.model.db.data_pg import DataPG
 from src.services.scheduler.active_scheduler import main as start_active
-from src.services.scheduler.lazy_scheduler import start_scheduler
 from src.config.app_config import redis_client
 
 router = APIRouter()
@@ -16,11 +15,6 @@ router = APIRouter()
 async def get_active_scheduler():
     await start_active()
     return {"message": "Active scheduler triggered."}
-
-@router.get("/api/avail-movies")
-async def get_avail_movies():
-    start_scheduler()
-    return {"message": "Lazy scheduler triggered to fetch available movies."}
 
 @router.get("/api/listed-movies")
 async def get_listed_movies():
@@ -62,3 +56,18 @@ async def get_listed_cinemas():
     await redis_client.set(cache_key, json.dumps(cinema_names))
     
     return {"cinemas": cinema_names}
+
+
+# Scrapping endpoints for testing purposes
+from src.model.core.avail_spider_pw import avail_movies
+from src.model.core.showg_spider import movies_showing
+
+@router.get("/api/scrape-lmovies")
+def scrape_listed_movies():
+    movies = avail_movies()
+    return {"movies": movies}
+
+@router.get("/api/scrape-amovies")
+async def scrape_available_movies(cinema: str, code: str, city: str, target_date: str, movie: str):
+    is_showing = await movies_showing(cinema, code, city, target_date, movie)
+    return {"is_showing": is_showing}

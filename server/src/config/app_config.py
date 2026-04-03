@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from starsessions import SessionMiddleware
 from starsessions.stores.redis import RedisStore
-import redis.asyncio as redis
 from upstash_redis.asyncio import Redis
 
 dotenv.load_dotenv()

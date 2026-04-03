@@ -18,7 +18,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
 
         try:
             url = f"https://in.bookmyshow.com/cinemas/{city}/{cinema}/buytickets/{code}/{target_date}"
-            logger.info(f"Navigating to URL: {url}")
+            # logger.info(f"Navigating to URL: {url}")
             await page.goto(url)
             
             await page.wait_for_url(url, timeout=5000)
@@ -33,7 +33,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
             cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
             cleaned = list(set(cleaned))  # Remove duplicates
             
-            # logger.info(f"Extracted movie titles: {cleaned}")
+            logger.info(f"Extracted movie titles: {cleaned}")
 
             if movie.upper() in cleaned:
                 logger.info(f"Movie '{movie}' is showing on {target_date} at {cinema}.")
