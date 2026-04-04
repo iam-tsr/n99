@@ -15,7 +15,7 @@ data_pg = DataPG()
 profile_pg = ProfilePG()
 
 scheduler = AsyncIOScheduler()
-sem = asyncio.Semaphore(3)
+sem = asyncio.Semaphore(1)
 SYNC_JOB_ID = "active-scheduler-sync"
 
 async def scheduling_task(**kwargs):
@@ -170,28 +170,17 @@ async def main():
         logger.info("Scheduler stopped.")
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
-    # async def main():
-    #     scheduler.start()
-        
-    #     job = add_new_job(
-    #         job_id=str(uuid.uuid4()),
-    #         date=datetime.now(), # Temporarily set to now for testing
-    #         name="inox-janak-place",
-    #         code="SCJN",
-    #         city="national-capital-region-ncr",
-    #         date="20260313"
-    #     )
-        
-    #     try:
-    #         while True:
-    #             await asyncio.sleep(1)
-    #     except (KeyboardInterrupt, SystemExit):
-    #         scheduler.shutdown()
-    #         print("Scheduler stopped.")
+async def run_forever():
+    """Standalone runner: initialize jobs and keep the loop alive."""
+    await main()
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except (KeyboardInterrupt, SystemExit):
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+        logger.info("Scheduler stopped.")
 
-    # asyncio.run(main())
-    # t = task_args()
-    # t = data_mappg([{'date': '2026-03-22', 'movie': 'Kerala Story 2', 'cinema': 'PVR: Vegas Dwarka', 'job_id': 'e54bf73f-8384-443e-b28c-21018574270a'}])
-    # print(t[0])
+
+if __name__ == "__main__":
+    asyncio.run(run_forever())

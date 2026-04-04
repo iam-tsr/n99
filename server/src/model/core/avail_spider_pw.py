@@ -3,6 +3,18 @@ from playwright.sync_api import sync_playwright
 from loguru import logger
 
 
+LAUNCH_ARGS = [
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-zygote",
+    "--single-process",
+    "--disable-features=Translate,BackForwardCache",
+]
+
+
 def _try_click(page, selectors, timeout=1500):
     for selector in selectors:
         try:
@@ -43,20 +55,18 @@ def clear_barriers(page):
         page.wait_for_timeout(500)
 
 def create_browser(playwright):
-    try:
-        browser = playwright.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-            ],
-        )
-        return browser
-
-    except Exception as e:
-        logger.error(f"Browser launch failed: {e}")
-        return None
+    for attempt in range(1, 4):
+        try:
+            browser = playwright.chromium.launch(
+                headless=True,
+                chromium_sandbox=False,
+                args=LAUNCH_ARGS,
+                timeout=45000,
+            )
+            return browser
+        except Exception as e:
+            logger.error(f"Browser launch failed (attempt {attempt}/3): {e}")
+    return None
 
 def avail_movies():
     url = "https://www.inoxmovies.com/"
