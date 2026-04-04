@@ -1,13 +1,14 @@
+import asyncio
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 from src.config.db_config import get_db_connection
 from src.model.core.avail_spider_pw import avail_movies
 
-scheduler = BackgroundScheduler()
+scheduler = AsyncIOScheduler()
 
-def avail_movies_task():
+def _avail_movies_task_sync():
     """Task function to fetch and store available movies."""
     conn = get_db_connection()
 
@@ -16,14 +17,18 @@ def avail_movies_task():
             if cur.execute("SELECT id FROM movie_data WHERE id = 'AVAIL'"):
                 # logger.info("Movie availability record already exists. Updating it.")
                 movies = avail_movies()
-                cur.execute("""
-                UPDATE movie_data
-                SET movie_titles = %s, updated_at = %s
-                WHERE id = 'AVAIL';
-                """, (movies, datetime.now(tz=ZoneInfo('Asia/Kolkata'))))
+                if movies not in (None, []):
+                    cur.execute("""
+                    UPDATE movie_data
+                    SET movie_titles = %s, updated_at = %s
+                    WHERE id = 'AVAIL';
+                    """, (movies, datetime.now(tz=ZoneInfo('Asia/Kolkata'))))
 
-        conn.commit()
-        logger.info("Updated available movies in available_movies.")
+                    conn.commit()
+                    logger.info("Updated listed movies")
+                    return
+                
+                logger.info("Couldn't fetch available movies. Skipping update.")
 
     except Exception as e:
         logger.error("Connection failed.")
@@ -33,7 +38,12 @@ def avail_movies_task():
         conn.close()
 
 
-def start_scheduler():
+async def avail_movies_task():
+    # DB and scraping operations are blocking; run them in a worker thread.
+    await asyncio.to_thread(_avail_movies_task_sync)
+
+
+async def start_scheduler():
     """Starts the scheduler and adds the movie availability task."""
     if scheduler.running:
         logger.info("Lazy scheduler is already running.")
@@ -48,13 +58,17 @@ def start_scheduler():
     scheduler.start()
     # logger.info("Scheduler started. Movie availability will be checked every 2 days.")
 
-if __name__ == "__main__":
-    start_scheduler()
-    
-    # Keep the main thread alive to let the scheduler run
+async def main():
+    await start_scheduler()
+
+    # Keep the process alive to let the scheduler run.
     try:
         while True:
-            pass
+            await asyncio.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
         logger.info("Scheduler stopped.")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

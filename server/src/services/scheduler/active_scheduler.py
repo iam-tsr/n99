@@ -16,6 +16,7 @@ profile_pg = ProfilePG()
 
 scheduler = AsyncIOScheduler()
 sem = asyncio.Semaphore(3)
+SYNC_JOB_ID = "active-scheduler-sync"
 
 async def scheduling_task(**kwargs):
     """Task function to fetch and store currently showing movies."""
@@ -32,21 +33,22 @@ async def scheduling_task(**kwargs):
         job_id = kwargs.get('ref_job_id')
         if result is True and job_id:
             logger.info(f"Movie '{kwargs['movie']}' is currently showing. Sending notification and removing job {job_id}.")
-            user_ids = data_pg.read_userID(job_id)
+            user_ids = await asyncio.to_thread(data_pg.read_userID, job_id)
+            cinema_name = await asyncio.to_thread(reverse_lookup, kwargs['cinema'])
 
             for user_id in user_ids:
-                user_data = profile_pg.read_user_data(user_id)
+                user_data = await asyncio.to_thread(profile_pg.read_user_data, user_id)
                 # Send notification email to user_email
                 await send_email(
                     to_email=user_data[0][1],
                     username=user_data[0][0],
                     movie=kwargs['movie'],
-                    cinema=reverse_lookup(kwargs['cinema']),
+                    cinema=cinema_name,
                     date=datetime.strptime(kwargs['target_date'], "%Y%m%d").strftime("%d-%m-%Y")
                 )
 
             scheduler.remove_job(job_id)
-            data_pg.delete_user_data(job_id)
+            await asyncio.to_thread(data_pg.delete_user_data, job_id)
             logger.info(f"Job {job_id} completed and removed from scheduler.")
 
     except Exception as e:
@@ -71,7 +73,7 @@ def add_new_job(job_id, **kwargs):
             logger.info(f"Successfully added Job: {job_id}")
             return new_job
         
-        logger.info(f"Job {job_id} already exists. Skipping creation.")
+        # logger.info(f"Job {job_id} already exists. Skipping creation.")
         return None
             
     except Exception as e:
@@ -138,10 +140,19 @@ async def main():
     try:
         if not scheduler.running:
             scheduler.start()
-        else:
-            return
 
-        movie_mapped_data, job_data = data_mappg(data_pg.find_job())
+        # Keep scheduler jobs in sync with DB even without frontend keep-alive pings.
+        if not scheduler.get_job(SYNC_JOB_ID):
+            scheduler.add_job(
+                main,
+                'interval',
+                id=SYNC_JOB_ID,
+                minutes=4,
+                # next_run_time=datetime.now(),
+            )
+
+        jobs = await asyncio.to_thread(data_pg.find_job)
+        movie_mapped_data, job_data = await asyncio.to_thread(data_mappg, jobs)
 
         for movie_record, job_record in zip(movie_mapped_data, job_data):
             add_new_job(
