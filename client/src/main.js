@@ -272,19 +272,3 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   e.preventDefault();
   await submitProfile(false);
 });
-
-// Activate schedulers
-const SCHEDULER_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
-// const SCHEDULER_INTERVAL = 1 * 60 * 1000; // 1 minute (for testing)
- 
-async function startKeepAlive() {
-  try {
-    await fetch(`${API_BASE_URL}/api/active-scheduler`, { method: 'GET' });
-    console.log('Active scheduler triggered');
-  } catch (error) {
-    console.error('Error triggering active scheduler:', error);
-  }
-}
-
-startKeepAlive();
-setInterval(startKeepAlive, SCHEDULER_INTERVAL);

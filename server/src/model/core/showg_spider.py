@@ -33,7 +33,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
             cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
             cleaned = list(set(cleaned))  # Remove duplicates
             
-            logger.info(f"Extracted movie titles: {cleaned}")
+            # logger.info(f"Extracted movie titles: {cleaned}")
 
             if movie.upper() in cleaned:
                 logger.info(f"Movie '{movie}' is showing on {target_date} at {cinema}.")
@@ -43,7 +43,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
                 return False
             
         except Exception as e:
-            logger.error("Data not available yet.")
+            logger.info("Data not available yet.")
             return []
         
         finally:

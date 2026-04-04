@@ -10,7 +10,8 @@ from src.services.scheduler.active_scheduler import main as start_active
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Start schedulers on startup
-    start_lazy()
+    await start_lazy()
+    await start_active()
     yield
 
 # Create the app ONCE here
