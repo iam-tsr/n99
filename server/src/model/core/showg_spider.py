@@ -4,12 +4,39 @@ from bs4 import BeautifulSoup
 from loguru import logger
 from playwright.async_api import async_playwright
 
+
+LAUNCH_ARGS = [
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-zygote",
+    "--single-process",
+    "--disable-features=Translate,BackForwardCache",
+]
+
+
+async def _launch_browser(playwright):
+    for attempt in range(1, 4):
+        try:
+            browser = await playwright.chromium.launch(
+                headless=True,
+                chromium_sandbox=False,
+                args=LAUNCH_ARGS,
+                timeout=45000,
+            )
+            return browser
+        except Exception as e:
+            logger.error(f"Browser launch failed (attempt {attempt}/3): {e}")
+    return None
+
 async def movies_showing(cinema: str, code: str, city: str, target_date: str, movie: str) -> list:
     async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage"]
-        )
+        browser = await _launch_browser(p)
+        if browser is None:
+            return []
+
         context = await browser.new_context(
             viewport={"width": 1920, "height": 1080},
             user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
@@ -59,7 +86,7 @@ def clean_titles(titles):
 
 if __name__ == "__main__":
     async def main():
-        movies = await movies_showing(cinema="pvr-vegas-dwarka", code="PVVW", city="national-capital-region-ncr", target_date="20260322")
+        movies = await movies_showing(cinema="pvr-vegas-dwarka", code="PVVW", city="national-capital-region-ncr", target_date="20260405", movie="DHURANDHAR THE REVENGE")
         print(movies)
 
     asyncio.run(main())
