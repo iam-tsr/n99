@@ -147,8 +147,7 @@ async def main():
                 main,
                 'interval',
                 id=SYNC_JOB_ID,
-                minutes=4,
-                # next_run_time=datetime.now(),
+                hours=12,
             )
 
         jobs = await asyncio.to_thread(data_pg.find_job)
