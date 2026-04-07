@@ -1,25 +1,25 @@
 FROM python:3.12-slim
 
-# 1. Install minimal runtime dependency for PostgreSQL client
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq5 \
-    --no-install-recommends \
+    && pip install --no-cache-dir playwright \
+    && playwright install-deps chromium \
+    && playwright install chromium \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 2. Install Python requirements
+# Install Python requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 3. Install Playwright browsers
-RUN playwright install chromium --with-deps
-
 COPY . .
 
-# 3. Environment variables
+# Environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
 
 EXPOSE 8000
 

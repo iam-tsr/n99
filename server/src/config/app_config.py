@@ -12,6 +12,9 @@ dotenv.load_dotenv()
 
 redis_client = Redis(url=os.getenv("UPSTASH_REDIS_REST_URL"), token=os.getenv("UPSTASH_REDIS_REST_TOKEN"))
 
+origins_raw = os.getenv("ALLOW_ORIGINS", "")
+origins = origins_raw.split(",") if origins_raw else []
+
 def create_app(lifespan=None) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
 
@@ -25,11 +28,7 @@ def create_app(lifespan=None) -> FastAPI:
     # CORS configuration
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "https://iam-tsr.github.io", # Production
-            "http://localhost:5173", # Local test with Vite dev server
-            "http://localhost:4173", # Local test with Vite preview
-        ],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
