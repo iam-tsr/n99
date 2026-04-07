@@ -223,9 +223,18 @@ document.getElementById('tracking-form').addEventListener('submit', async (e) =>
   const btn = e.target.querySelector('button');
   const statusEl = document.getElementById('movie-status');
   
+  const movie = document.getElementById('movie').value;
+  const cinema = document.getElementById('cinema').value;
+  
+  if (!movie || !cinema) {
+    statusEl.style.color = '#DA0B37';
+    statusEl.textContent = 'Please select both a movie and cinema.';
+    return;
+  }
+  
   const payload = {
-    movie: document.getElementById('movie').value,
-    cinema: document.getElementById('cinema').value,
+    movie: movie,
+    cinema: cinema,
     date: document.getElementById('date').value,
   };
 

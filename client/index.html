@@ -64,13 +64,22 @@
           <div class="profile-card">
             <form id="profile-form">
               <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" required placeholder="Enter username" />
+                <label for="username">Name</label>
+                <input type="text" id="username" required placeholder="Enter your name" />
               </div>
               
               <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required placeholder="Enter email address" />
+                <label for="email" class="label-with-icon">
+                  Email
+                  <span class="info-icon" title="For notification">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 16v-4"/>
+                      <path d="M12 8h.01"/>
+                    </svg>
+                  </span>
+                </label>
+                <input type="email" id="email" required placeholder="Enter your email" />
               </div>
               
               <button type="submit" class="primary-btn">Save Profile</button>
