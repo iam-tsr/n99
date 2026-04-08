@@ -133,7 +133,7 @@ async function populateDropdowns() {
 // Set min date for calendar input to tomorrow
 document.addEventListener('DOMContentLoaded', () => {
   populateDropdowns();
-  
+
   const dateInput = document.getElementById('date');
   if (dateInput) {
     const today = new Date();
@@ -166,7 +166,7 @@ async function checkSession() {
 async function submitProfile(skipForm = false) {
   const btn = document.querySelector('#profile-form button');
   const statusEl = document.getElementById('profile-status');
-  
+
   if (!currentTempKey) {
     statusEl.style.color = '#DA0B37';
     statusEl.textContent = 'Please start tracking a movie first.';
@@ -200,7 +200,7 @@ async function submitProfile(skipForm = false) {
 
     await res.json();
     showPage('success');
-    
+
     setTimeout(() => {
       currentTempKey = null;
       document.getElementById('profile-form').reset();
@@ -222,16 +222,16 @@ document.getElementById('tracking-form').addEventListener('submit', async (e) =>
   e.preventDefault();
   const btn = e.target.querySelector('button');
   const statusEl = document.getElementById('movie-status');
-  
+
   const movie = document.getElementById('movie').value;
   const cinema = document.getElementById('cinema').value;
-  
+
   if (!movie || !cinema) {
     statusEl.style.color = '#DA0B37';
     statusEl.textContent = 'Please select both a movie and cinema.';
     return;
   }
-  
+
   const payload = {
     movie: movie,
     cinema: cinema,
@@ -249,12 +249,12 @@ document.getElementById('tracking-form').addEventListener('submit', async (e) =>
     });
     const data = await res.json();
     const tempKey = data.temp_key;
-    
+
     if (tempKey) {
       currentTempKey = tempKey;
       statusEl.style.color = '#10B981';
       statusEl.textContent = 'Tracking initiated! Moving to profile...';
-      
+
       setTimeout(async () => {
         // Check session before showing profile
         const hasSession = await checkSession();
