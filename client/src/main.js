@@ -1,6 +1,12 @@
 let currentTempKey = null;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+
 // Page Navigation
 function showPage(pageId) {
   const sections = document.querySelectorAll('.page-section');
@@ -181,7 +187,14 @@ async function submitProfile(skipForm = false) {
   if (!skipForm) {
     payload.username = document.getElementById('username').value;
     payload.email = document.getElementById('email').value;
+
+    if (!validateEmail(payload.email)) {
+      statusEl.style.color = '#DA0B37';
+      statusEl.textContent = 'Please enter a valid email address.';
+      return;
+    }
   }
+
 
   if (btn) btn.textContent = 'Confirming...';
 
