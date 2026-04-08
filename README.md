@@ -24,6 +24,16 @@ n99 is an automated movie ticket tracking application that monitors cinema websi
 | **Background Automation** | Automated scraping with Playwright & Selenium |
 | **Job Scheduling** | APScheduler handles periodic checks efficiently |
 | **User Profiles** | Persistent user preferences and tracking history |
+ 
+## Supported Cinemas
+ 
+We currently support the **Delhi** region only, specifically these cinemas:
+- **INOX:** Janak Place
+- **PVR:** Vegas Dwarka
+- **PVR:** Pacific, Subhash Nagar, Delhi
+- **PVR:** Vikaspuri, Delhi
+ 
+If you want your near cinema hall to be listed please [email](mailto:[tusharsoni.info@gmail.com]) us or create an issue.
 
 ## Issues
 
