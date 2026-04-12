@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="client/src/assets/n99_logo.png" alt="n99 Logo" width="240" onerror="this.style.display='none'">
+<img src="public/n99_logo.png" alt="n99 Logo" width="240" onerror="this.style.display='none'">
 
 **Intelligent Movie Ticket Availability Tracker**
 
@@ -19,12 +19,16 @@ n99 is an automated movie ticket tracking application that monitors cinema websi
 
 | Feature | Description |
 |---------|-------------|
-| **Smart Tracking** | Select movie, cinema, and date to track availability |
-| **Real-time Notifications** | Instant email alerts when tickets become available |
-| **Background Automation** | Automated scraping with Playwright & Selenium |
-| **Job Scheduling** | APScheduler handles periodic checks efficiently |
-| **User Profiles** | Persistent user preferences and tracking history |
- 
+| **Smart Tracking** | We monitor multiple cinemas and movies simultaneously, ensuring you're always in the loop. |
+| **Real-time Notifications** | Get instant email alerts the moment tickets go live. |
+| **Background Automation** | Our system works tirelessly in the background, checking for ticket availability without any manual intervention. |
+| **Job Scheduling** | Our advanced scheduling system ensures that we check for ticket availability at the most optimal times, maximizing efficiency while minimizing resource usage. |
+| **User Profiles** | Save your preferences and track your movie-watching history effortlessly. |
+
+## Demo Video
+
+<video controls src="public/n99-demo.mp4" title="n99 Demo"></video>
+
 ## Supported Cinemas
  
 We currently support the **Delhi** region only, specifically these cinemas:
