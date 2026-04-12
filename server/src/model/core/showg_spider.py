@@ -43,7 +43,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
                 return False
             
         except Exception as e:
-            logger.info("Data not available yet.")
+            logger.info(f"Data not available yet for {movie} at {cinema} on {target_date}.")
             return []
         
         finally:
