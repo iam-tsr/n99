@@ -27,7 +27,7 @@ n99 is an automated movie ticket tracking application that monitors cinema websi
 
 ## Demo Video
 
-<video controls src="public/n99-demo.mp4" title="n99 Demo"></video>
+https://github.com/user-attachments/assets/ec17ed11-9bb4-4c46-a523-8958a13ec173
 
 ## Supported Cinemas
  
