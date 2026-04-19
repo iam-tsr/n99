@@ -136,19 +136,8 @@ async function populateDropdowns() {
   }
 }
 
-// Check server health
-async function checkServerHealth() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/health`);
-    if (!res.ok) throw new Error('Server down');
-  } catch (error) {
-    window.location.href = '/n99/offline';
-  }
-}
-
 // Set min date for calendar input to tomorrow
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkServerHealth();
+document.addEventListener('DOMContentLoaded', () => {
   populateDropdowns();
 
   const dateInput = document.getElementById('date');
