@@ -3,13 +3,11 @@ name: Build and Push Docker Image
 on:
   push:
     branches: main
-    paths:
-      - 'server/**'
   workflow_dispatch:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/n99
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/n99-server
 
 jobs:
   build-and-push:
@@ -30,7 +28,6 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -45,6 +42,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./server
+          file: ./server/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
