@@ -52,11 +52,11 @@ async def start_scheduler():
     scheduler.add_job(
         avail_movies_task, 
         'interval', 
-        days=2, 
-        next_run_time=datetime.now()
+        days=1, 
+        next_run_time=datetime.now() 
     )
     scheduler.start()
-    # logger.info("Scheduler started. Movie availability will be checked every 2 days.")
+    # logger.info("Scheduler started. Movie availability will be checked every 1 days.")
 
 async def main():
     await start_scheduler()

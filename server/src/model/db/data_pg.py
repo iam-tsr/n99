@@ -157,6 +157,43 @@ class DataPG:
         finally:
             if conn:
                 conn.close()
+    
+    def delete_old_jobs(self):
+        conn = None
+        try:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
+                # Delete user_data entries older than current date
+                cur.execute("""DELETE FROM user_data
+                WHERE date < CURRENT_DATE
+                RETURNING job_id;""")
+                deleted_jobs = cur.fetchall()
+                conn.commit()
+                for job_id in deleted_jobs:
+                    logger.info(f"OLD_DATA: Deleted record with {job_id} from user_data.")
+        except Exception as e:
+            logger.error(f"Connection failed. Error: {e}")
+        finally:            
+            if conn:
+                conn.close()
+
+    def check_old_jobs(self):
+        conn = None
+        try:
+            conn = self._get_conn()
+            with conn.cursor() as cur:
+                cur.execute("SELECT * FROM user_data WHERE date < CURRENT_DATE;")
+                records = cur.fetchall()
+                
+                return records
+        except Exception as e:
+            logger.error(f"Failed to fetch records. Error: {e}")
+        finally:            
+            if conn:
+                conn.close()
+
+        
+
 
 if __name__ == "__main__":
     data_pg = DataPG()
@@ -167,7 +204,8 @@ if __name__ == "__main__":
     # data = [data_pg.read_linked_data_by_user_id(user_id) for user_id in user_ids]
     # data_pg.update_user_data("17", "Updated Movie", "2026-03-23", "Updated Cinema")
     # data_pg.delete_user_data("17")
-    data = data_pg.read_listed_movies()
+    # data = data_pg.read_listed_movies()
+    data = data_pg.delete_old_jobs()
 
     print(data)
-    data_pg.connection_close()
+    # data_pg.connection_close()

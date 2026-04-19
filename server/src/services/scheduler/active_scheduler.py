@@ -49,6 +49,7 @@ async def scheduling_task(**kwargs):
 
             scheduler.remove_job(job_id)
             await asyncio.to_thread(data_pg.delete_user_data, job_id)
+            await asyncio.to_thread(data_pg.delete_old_jobs)
             logger.info(f"Job {job_id} completed and removed from scheduler.")
 
     except Exception as e:
@@ -66,7 +67,7 @@ def add_new_job(job_id, **kwargs):
                 scheduling_task,
                 'interval',
                 id=job_id,
-                hours=6,
+                hours=3,
                 next_run_time=datetime.now(),
                 kwargs=kwargs
             )
@@ -83,7 +84,7 @@ def data_mappg(data):
     try:
         # logger.info(f"Running data_mappg at {datetime.now()}")
         # Read cinema-list.json and map the data to the required format
-        with open("src/services/scheduler/cinema-list.json", "r") as f:
+        with open("src/config/cinema-list.json", "r") as f:
             cinema_list = json.load(f)
 
         movie_mapped_data = []
@@ -123,7 +124,7 @@ def data_mappg(data):
     
 def reverse_lookup(cinema_var):
     try:
-        with open("src/services/scheduler/cinema-list.json", "r") as f:
+        with open("src/config/cinema-list.json", "r") as f:
             cinema_list = json.load(f)
 
         # Build reverse lookup dict: {name: original_name}

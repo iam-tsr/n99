@@ -23,8 +23,8 @@ async def get_listed_movies():
     data_pg = DataPG()
     data = data_pg.read_listed_movies()
 
-    # Store in Redis with 1 hour expiry (3600 seconds)
-    await redis_client.setex(cache_key, 3600, json.dumps(data))
+    # Store in Redis with 1 day expiry (86400 seconds)
+    await redis_client.setex(cache_key, 86400, json.dumps(data))
     
     return {"movies": data}
 
@@ -39,7 +39,7 @@ async def get_listed_cinemas():
     
     # Fetch from JSON file
     try:
-        with open('src/services/scheduler/cinema-list.json', 'r') as f:
+        with open('src/config/cinema-list.json', 'r') as f:
             data = json.load(f)
             cinema_names = list(data.get('cinema', {}).keys())
     except Exception as e:
