@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap');
+
+:root {
+  --bg-color: #FAF9F6;       /* Clean off-white background */
+  --card-bg: #FFFFFF;        /* Pure white card */
+  --input-bg: #F9F3EF;       /* Warm sand input background from image */
+  --btn-color: #D32F2F;      /* Updated vibrant red */
+  --text-dark: #2D2D2D;      /* Soft dark for better readability */
+  --text-label: #1A1A1A;     /* Black labels */
+  --border-radius: 12px;
+  --font-family: 'Outfit', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}

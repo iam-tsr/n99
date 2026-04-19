@@ -1,0 +1,17 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0 20px;
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  text-align: center;
+}
+
+img {
+  width: 150px;
+  height: auto;
+}
+h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+p { color: var(--text-label); }
