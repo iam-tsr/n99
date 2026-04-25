@@ -22,7 +22,6 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
             await page.goto(url)
             
             await page.wait_for_url(url, timeout=5000)
-            logger.info("Data is available now. Extracting movie titles...")
             
             await page.wait_for_selector("a.sc-1412vr2-2", timeout=15000)
 
@@ -32,19 +31,15 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
             movie_titles = soup.find_all("a", class_="sc-1412vr2-2 cPWByY")
             cleaned = clean_titles([tag.text.strip() for tag in movie_titles if tag.text.strip()])
             cleaned = list(set(cleaned))  # Remove duplicates
-            
-            # logger.info(f"Extracted movie titles: {cleaned}")
 
             if movie.upper() in cleaned:
                 logger.info(f"Movie '{movie}' is showing on {target_date} at {cinema}.")
                 return True
-            else:
-                logger.info(f"Movie '{movie}' is NOT showing on {target_date} at {cinema}.")
-                return False
             
         except Exception as e:
-            logger.info(f"Data not available yet for {movie} at {cinema} on {target_date}.")
-            return []
+            # Eventually, if the page not found, it will throw an error, which means the movie is not showing. So we can catch that error and return False.
+            logger.info(f"Movie '{movie}' is NOT showing on {target_date} at {cinema}.")
+            return False
         
         finally:
             await context.close()
