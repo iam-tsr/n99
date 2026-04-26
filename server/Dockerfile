@@ -4,7 +4,7 @@ FROM python:3.13-slim
 RUN apt-get update && apt-get install -y \
     libpq5 \
     && pip install --no-cache-dir playwright \
-    && playwright install-deps chromium \
+    && playwright install-deps \
     && playwright install chromium \
     && rm -rf /var/lib/apt/lists/*
 

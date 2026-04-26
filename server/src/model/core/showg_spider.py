@@ -18,7 +18,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
 
         try:
             url = f"https://in.bookmyshow.com/cinemas/{city}/{cinema}/buytickets/{code}/{target_date}"
-            # logger.info(f"Navigating to URL: {url}")
+            logger.info(f"Navigating to URL: {url}")
             await page.goto(url)
             
             await page.wait_for_url(url, timeout=5000)
@@ -39,6 +39,7 @@ async def movies_showing(cinema: str, code: str, city: str, target_date: str, mo
         except Exception as e:
             # Eventually, if the page not found, it will throw an error, which means the movie is not showing. So we can catch that error and return False.
             logger.info(f"Movie '{movie}' is NOT showing on {target_date} at {cinema}.")
+            logger.error(f"Error occurred: {e}")
             return False
         
         finally:
@@ -55,7 +56,7 @@ def clean_titles(titles):
 
 if __name__ == "__main__":
     async def main():
-        movies = await movies_showing(cinema="pvr-vegas-dwarka", code="PVVW", city="national-capital-region-ncr", target_date="20260408", movie="DHURANDHAR THE REVENGE")
+        movies = await movies_showing(cinema="inox-janak-place", code="SCJN", city="national-capital-region-ncr", target_date="20260428", movie="DHURANDHAR THE REVENGE")
         print(movies)
 
     asyncio.run(main())
